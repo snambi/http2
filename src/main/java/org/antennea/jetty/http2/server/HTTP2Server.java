@@ -69,10 +69,14 @@ public class HTTP2Server extends Server{
         
         // SSL Connection Factory
         SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory,alpn.getProtocol());
+        //SslConnectionFactory ssl = new SslConnectionFactory();
 
         // HTTP2 Connector
         ServerConnector http2Connector =
             new ServerConnector(this,ssl,alpn,h2,new HttpConnectionFactory(httpsConfig));
+        //ServerConnector http2Connector =
+        //        new ServerConnector(this,new HttpConnectionFactory(httpsConfig));
+        
         http2Connector.setPort(httpsPort);
         
         // Add HTTP2 connector

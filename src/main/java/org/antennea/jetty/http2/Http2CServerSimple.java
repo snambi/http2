@@ -73,7 +73,7 @@ public class Http2CServerSimple {
                 HttpServletResponse response ) throws ServletException,
                                               IOException{
 			
-			response.setContentType("text/html");
+			response.setContentType("text/javascript");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<script>console.log('hello world');</script>");
 		}
