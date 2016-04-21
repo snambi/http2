@@ -1,4 +1,4 @@
-## HTTP2 Server Ssing Jetty.
+## HTTP2 Server Using Jetty.
 
 ### Build the jar 
 
