@@ -3,9 +3,8 @@ package org.antennea.jetty.http2;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.security.KeyStore;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,11 +27,11 @@ public class Http2ServerSimple {
 		HTTP2Server server = new HTTP2Server(8080, 8443, true, ks, "test123");
 		
 		WebAppContext webapp = new WebAppContext();
-        webapp.setContextPath("/test");
+        webapp.setContextPath("");
         
-        File warFile = new File("src/main/webapp");
+        File warFile = new File(".");
         webapp.setWar(warFile.getAbsolutePath());
-        webapp.addServlet(Http2Servlet.class, "/h1");
+        webapp.addServlet(Http2Servlet.class, "/h2");
         webapp.addServlet(JsServlet.class, "/s1.js");
        
  
@@ -44,9 +43,12 @@ public class Http2ServerSimple {
 		server.join();
 	}
 	
+	
 	public static class Http2Servlet extends HttpServlet{
     	
 		private static final long serialVersionUID = 198603515368538086L;
+		
+		private static String word = generateRandomWord();
 
 		@Override
         protected void doGet( HttpServletRequest request,
@@ -69,7 +71,7 @@ public class Http2ServerSimple {
     		
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("<html><head><script type='text/javascript' src='/test/s1.js'></script></head><body><h2>Hello from HelloServlet</h2></body></html>");
+            response.getWriter().println("<html><head><script type='text/javascript' src='/test/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p></body></html>");
         }
     }
 	
@@ -84,6 +86,17 @@ public class Http2ServerSimple {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<script>console.log('hello world');</script>");
 		}
+	}
+	
+	public static String generateRandomWord(){
+		
+		Random random = new Random();
+		char[] word = new char[random.nextInt(8)+ 5];
+		for( int i=0 ; i< word.length ; i++ ){
+			word[i] = (char) ( 'a' + random.nextInt(26));
+		}
+		
+		return new String(word);
 	}
 
 }
