@@ -12,7 +12,9 @@ http://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-versio
 
 ### Download the ALPN-boot jar
 
+http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.mortbay.jetty.alpn%22%20AND%20a%3A%22alpn-boot%22
+
 ### Run the server
 ```bash
-java -Xbootclasspath/p:/path/to/alpn-boot-8.1.5.v20150921.jar -jar target/http2-0.0.1-SNAPSHOT.jar
+java -Xbootclasspath/p:/path/to/alpn-boot-<version>.jar -jar target/http2-0.0.1-SNAPSHOT.jar
 ```
