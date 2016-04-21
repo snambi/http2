@@ -19,12 +19,26 @@ import org.eclipse.jetty.webapp.WebAppContext;
 public class Http2ServerSimple {
 
 	public static void main( String[] args ) throws Exception{
-		
+
+		int http_port = 8080;
+		int https_port = 8443;
+
+		if( args.length > 0 ){ 
+			
+			if( args.length != 2 ){
+				System.err.println("HTTP and HTTPS port numbers must be provided.");
+				System.exit(-1);
+			}
+			
+			http_port = Integer.parseInt(args[0]);
+			https_port = Integer.parseInt(args[1]);
+		}
+			
 		InputStream ksin = Http2ServerSimple.class.getClassLoader().getResourceAsStream("keystore.jks");
 		KeyStore ks = KeyStore.getInstance("jks");
 		ks.load(ksin, "test123".toCharArray() );
 				
-		HTTP2Server server = new HTTP2Server(8080, 8443, true, ks, "test123");
+		HTTP2Server server = new HTTP2Server(http_port, https_port, true, ks, "test123");
 		
 		WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("");
@@ -59,19 +73,20 @@ public class Http2ServerSimple {
     		Request srvRequest = (Request) request;
     		
     		
-    		if( srvRequest.getRequestURI().equals("/test/h1" ) && srvRequest.isPushSupported() ){
-    			System.out.println("push supported");
+    		if( srvRequest.getRequestURI().equals("/h2" ) && srvRequest.isPushSupported() ){
+    			
     			
     			PushBuilder pb = srvRequest.getPushBuilder();
     			
     			pb.addHeader("PUSH", "hello");
-    			pb.path("/test/s1.js");
+    			pb.path("/s1.js");
+    			System.out.println("s1.js pushed");
     			pb.push();
     		}
     		
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("<html><head><script type='text/javascript' src='/test/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p></body></html>");
+            response.getWriter().println("<html><head><script type='text/javascript' src='/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p></body></html>");
         }
     }
 	
@@ -84,7 +99,7 @@ public class Http2ServerSimple {
 			
 			response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("<script>console.log('hello world');</script>");
+            response.getWriter().println("console.log('hello world');");
 		}
 	}
 	
