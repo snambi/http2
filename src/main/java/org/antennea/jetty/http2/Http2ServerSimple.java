@@ -2,6 +2,10 @@ package org.antennea.jetty.http2;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.security.KeyStore;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,12 +21,11 @@ public class Http2ServerSimple {
 
 	public static void main( String[] args ) throws Exception{
 		
-		File keystore = new File("src/main/resources/keystore.jks");
-		if( !keystore.exists() || !keystore.canRead()){
-			throw new RuntimeException("Unable read keystore or keystore doesn't exist");
-		}
-		
-		HTTP2Server server = new HTTP2Server(8080, 8443, true, keystore.getAbsolutePath(), "test123", "test123");
+		InputStream ksin = Http2ServerSimple.class.getClassLoader().getResourceAsStream("keystore.jks");
+		KeyStore ks = KeyStore.getInstance("jks");
+		ks.load(ksin, "test123".toCharArray() );
+				
+		HTTP2Server server = new HTTP2Server(8080, 8443, true, ks, "test123");
 		
 		WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/test");
@@ -66,7 +69,7 @@ public class Http2ServerSimple {
     		
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("<h2>Hello from HelloServlet</h2>");
+            response.getWriter().println("<html><head><script type='text/javascript' src='/test/s1.js'></script></head><body><h2>Hello from HelloServlet</h2></body></html>");
         }
     }
 	

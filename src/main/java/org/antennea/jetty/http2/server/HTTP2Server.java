@@ -1,6 +1,6 @@
 package org.antennea.jetty.http2.server;
 
-import java.io.File;
+import java.security.KeyStore;
 
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
@@ -25,7 +25,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 public class HTTP2Server extends Server{
 
 	public HTTP2Server( int httpPort, int httpsPort, boolean http2clear, 
-						String keystorePath, String keyStorePassword, String keyManagerPassword ){
+						KeyStore keystore, String keyManagerPassword ){
 		
 		
 		// create HTTP configuration
@@ -50,8 +50,7 @@ public class HTTP2Server extends Server{
         
         // SSL Context factory for HTTPS and HTTP/2
         SslContextFactory sslContextFactory = new SslContextFactory();
-        sslContextFactory.setKeyStorePath(keystorePath);
-        sslContextFactory.setKeyStorePassword( keyStorePassword);
+        sslContextFactory.setKeyStore(keystore);
         sslContextFactory.setKeyManagerPassword(keyManagerPassword);
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
         
@@ -62,26 +61,21 @@ public class HTTP2Server extends Server{
         // HTTP2 Connection Factory
         HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConfig);
         
-        
         NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
         ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
         alpn.setDefaultProtocol(httpConnector.getDefaultProtocol());
         
         // SSL Connection Factory
         SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory,alpn.getProtocol());
-        //SslConnectionFactory ssl = new SslConnectionFactory();
 
         // HTTP2 Connector
         ServerConnector http2Connector =
             new ServerConnector(this,ssl,alpn,h2,new HttpConnectionFactory(httpsConfig));
-        //ServerConnector http2Connector =
-        //        new ServerConnector(this,new HttpConnectionFactory(httpsConfig));
         
         http2Connector.setPort(httpsPort);
         
         // Add HTTP2 connector
         addConnector(http2Connector);
-
         
         ((QueuedThreadPool)getThreadPool()).setName("http2-server");
 
