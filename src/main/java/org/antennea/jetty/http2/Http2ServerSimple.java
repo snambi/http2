@@ -20,25 +20,27 @@ public class Http2ServerSimple {
 
 	public static void main( String[] args ) throws Exception{
 
+		String host = "127.0.0.1";
 		int http_port = 8080;
 		int https_port = 8443;
 
 		if( args.length > 0 ){ 
 			
-			if( args.length != 2 ){
-				System.err.println("HTTP and HTTPS port numbers must be provided.");
+			if( args.length != 3 ){
+				System.err.println("Usage: java -jar http2.jar <ip-address> <http-port> <https-port>");
 				System.exit(-1);
 			}
 			
-			http_port = Integer.parseInt(args[0]);
-			https_port = Integer.parseInt(args[1]);
+			host = args[0];
+			http_port = Integer.parseInt(args[1]);
+			https_port = Integer.parseInt(args[2]);
 		}
 			
 		InputStream ksin = Http2ServerSimple.class.getClassLoader().getResourceAsStream("keystore.jks");
 		KeyStore ks = KeyStore.getInstance("jks");
 		ks.load(ksin, "test123".toCharArray() );
 				
-		HTTP2Server server = new HTTP2Server(http_port, https_port, true, ks, "test123");
+		HTTP2Server server = new HTTP2Server(host, http_port, https_port, true, ks, "test123");
 		
 		WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("");

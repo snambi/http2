@@ -24,7 +24,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
  */
 public class HTTP2Server extends Server{
 
-	public HTTP2Server( int httpPort, int httpsPort, boolean http2clear, 
+	public HTTP2Server( String host, int httpPort, int httpsPort, boolean http2clear, 
 						KeyStore keystore, String keyManagerPassword ){
 		
 		
@@ -43,6 +43,7 @@ public class HTTP2Server extends Server{
         }
         
         httpConnector.setPort(httpPort);
+        httpConnector.setHost(host);
         addConnector(httpConnector);
        
         
