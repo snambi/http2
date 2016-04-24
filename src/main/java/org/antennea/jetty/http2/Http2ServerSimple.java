@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.Date;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -86,9 +87,11 @@ public class Http2ServerSimple {
     			pb.push();
     		}
     		
+    		String timestr = (new Date()).toString();
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("<html><head><script type='text/javascript' src='/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p></body></html>");
+            
+            response.getWriter().println("<html><head><script type='text/javascript' src='/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p><p>"+ timestr +"</p></body></html>");
         }
     }
 	
