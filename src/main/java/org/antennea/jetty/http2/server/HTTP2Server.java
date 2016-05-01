@@ -6,6 +6,7 @@ import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
+import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
@@ -44,9 +45,20 @@ public class HTTP2Server extends Server{
         
         httpConnector.setPort(httpPort);
         httpConnector.setHost(host);
-        addConnector(httpConnector);
-       
         
+        httpConnector.addBean(new Connection.Listener(){
+				public void onClosed(Connection conn) {
+					Class x = conn.getClass();
+					System.out.println("Closed connection:" + x.getCanonicalName() );
+				}
+				public void onOpened(Connection conn) {
+					Class x = conn.getClass();
+					System.out.println("Opened connection:" + x.getCanonicalName() );
+				}
+			}
+        );
+        
+        addConnector(httpConnector);
         
         
         // SSL Context factory for HTTPS and HTTP/2
@@ -74,6 +86,16 @@ public class HTTP2Server extends Server{
             new ServerConnector(this,ssl,alpn,h2,new HttpConnectionFactory(httpsConfig));
         
         http2Connector.setPort(httpsPort);
+        http2Connector.addBean( new Connection.Listener(){
+			public void onClosed(Connection conn) {
+				Class x = conn.getClass();
+				System.out.println("Closed SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().getHostString());
+			}
+			public void onOpened(Connection conn) {
+				Class x = conn.getClass();
+				System.out.println("Opened SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().getHostString());
+			}
+        });
         
         // Add HTTP2 connector
         addConnector(http2Connector);
