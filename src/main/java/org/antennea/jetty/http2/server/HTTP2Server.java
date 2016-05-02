@@ -67,20 +67,21 @@ public class HTTP2Server extends Server{
         sslContextFactory.setKeyManagerPassword(keyManagerPassword);
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
         
-        // Create HTTPS Configuration from HTTP configuration
-        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-        httpsConfig.addCustomizer(new SecureRequestCustomizer());
-		
-        // HTTP2 Connection Factory
-        HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConfig);
-        
         NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
         ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
         alpn.setDefaultProtocol(httpConnector.getDefaultProtocol());
-        
+
         // SSL Connection Factory
         SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory,alpn.getProtocol());
 
+        // Create HTTPS Configuration from HTTP configuration
+        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+
+        // HTTP2 Connection Factory
+        //HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConfig);
+        HTTP2ServerSessionTrackingConnectionFactory h2 = new HTTP2ServerSessionTrackingConnectionFactory(httpsConfig);
+        
         // HTTP2 Connector
         ServerConnector http2Connector =
             new ServerConnector(this,ssl,alpn,h2,new HttpConnectionFactory(httpsConfig));
@@ -96,6 +97,7 @@ public class HTTP2Server extends Server{
 				System.out.println("Opened SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().getHostString());
 			}
         });
+        
         
         // Add HTTP2 connector
         addConnector(http2Connector);
