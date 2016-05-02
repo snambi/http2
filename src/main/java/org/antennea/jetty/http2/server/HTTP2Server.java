@@ -90,11 +90,11 @@ public class HTTP2Server extends Server{
         http2Connector.addBean( new Connection.Listener(){
 			public void onClosed(Connection conn) {
 				Class x = conn.getClass();
-				System.out.println("Closed SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().getHostString());
+				System.out.println("Closed SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().toString());
 			}
 			public void onOpened(Connection conn) {
 				Class x = conn.getClass();
-				System.out.println("Opened SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().getHostString());
+				System.out.println("Opened SSL connection:" + System.identityHashCode(conn)+ " : " + x.getCanonicalName() + " : " + conn.getEndPoint().getRemoteAddress().toString());
 			}
         });
         

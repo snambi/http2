@@ -90,7 +90,7 @@ public class Http2ServerSimple {
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
             //Keep-Alive: timeout=15, max=100
-            //response.setHeader("Keep-Alive", "timeout=15, max=100");
+            response.setHeader("Keep-Alive", "timeout=15, max=100");
             
             response.getWriter().println("<html><head><script type='text/javascript' src='/s1.js'></script></head><body><h2>Hello from HelloServlet</h2><p>"+ word+ "</p><p>"+ timestr +"</p></body></html>");
             System.out.println("response sent");
